@@ -1,4 +1,5 @@
 #include <string.h>
+#include "dictionary.h"
 
 const char *get_file_extension(const char *f_name)
 {
