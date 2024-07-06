@@ -3,8 +3,6 @@
 #include <string.h>
 #include "dictionary.h"
 
-#define INPUT_BUFFER_SIZE   255
-
 int csv_to_dict(const char *file_name, Dictionary *dict)
 {
     FILE *f = fopen(file_name, "r");
@@ -14,25 +12,32 @@ int csv_to_dict(const char *file_name, Dictionary *dict)
         return EXIT_FAILURE;
     }
 
-    char line[INPUT_BUFFER_SIZE];
-    DictionaryEntry entry;
+    const size_t buff_size = 255;
+    char line[buff_size];
+    char *key;
+    char *value;
+
     while (fgets(line, sizeof(line), f))
     {
         line[strcspn(line, "\n")] = '\0';
 
-        char *token = strtok(line, ",");
-        if (token != NULL)
-        {
-            strncpy(entry.key, token, sizeof(token));
-        }
+        key = strtok(line, ",");
+        value = strtok(NULL, ",");
 
-        token = strtok(NULL, ",");
-        if (token != NULL)
+        if (key != NULL && value != NULL)
         {
-            strncpy(entry.value, token, sizeof(token));
-        }
+            char *key_copy = strdup(key);
+            char *value_copy = strdup(value);
 
-        dict_add_entry(dict, &entry);
+            if (key_copy == NULL || value_copy == NULL)
+            {
+                perror("Failed to allocate memory");
+                fclose(f);
+                return EXIT_FAILURE;
+            }
+            
+            dict_add_kv(dict, key_copy, value_copy);
+        }
     }
 
     fclose(f);
