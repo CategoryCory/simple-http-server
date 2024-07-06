@@ -147,6 +147,11 @@ const char *dict_add_entry(Dictionary *dict, DictionaryEntry *entry)
     return dict_add_kv(dict, entry->key, entry->value);
 }
 
+bool dict_contains_key(Dictionary *dict, const char *key)
+{
+    return dict_get(dict, key) != NULL;
+}
+
 size_t dict_length(Dictionary *dict)
 {
     return dict->length;

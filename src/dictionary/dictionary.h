@@ -33,6 +33,7 @@ void dict_destroy(Dictionary *dict);
 void *dict_get(Dictionary *dict, const char *key);
 const char *dict_add_kv(Dictionary *dict, const char *key, void *value);
 const char *dict_add_entry(Dictionary *dict, DictionaryEntry *entry);
+bool dict_contains_key(Dictionary *dict, const char *key);
 size_t dict_length(Dictionary *dict);
 
 #endif // DICTIONARY_H
