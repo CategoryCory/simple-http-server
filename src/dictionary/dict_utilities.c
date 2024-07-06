@@ -2,14 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include "dictionary.h"
+#include "dict_utilities.h"
 
-/**
- * @brief Converts a CSV file containing two columns to a dictionary.
- * 
- * @param file_name The name of the CSV file as a string.
- * @param dict A pointer to the dictionary to populate.
- * @return 0 if the dictionary was successfully populated, non-zero otherwise.
- */
 int csv_to_dict(const char *file_name, Dictionary *dict)
 {
     FILE *f = fopen(file_name, "r");
