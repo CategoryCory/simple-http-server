@@ -1,4 +1,5 @@
 #include <string.h>
+#include "server.h"
 #include "dictionary.h"
 
 const char *get_file_extension(const char *f_name)
@@ -35,4 +36,9 @@ const char *get_mime_type(const char *f_ext)
     {
         return "application/octet-stream";
     }
+}
+
+const char *start_server(void)
+{
+    return "Server starting...";
 }

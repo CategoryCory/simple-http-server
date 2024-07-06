@@ -1,8 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include "server/server.h"
 
 int main(void)
 {
-    printf("Coming soon...\n");
+    printf("%s\n", start_server());
     return EXIT_SUCCESS;
 }

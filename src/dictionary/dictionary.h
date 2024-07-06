@@ -1,6 +1,7 @@
 #ifndef DICTIONARY_H
 #define DICTIONARY_H
 
+#include <stdbool.h>
 #include <stdlib.h>
 
 #define INITIAL_CAPACITY    16
