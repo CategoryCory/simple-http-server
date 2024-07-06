@@ -130,7 +130,7 @@ void *dict_get(Dictionary *dict, const char *key)
     return NULL;
 }
 
-const char *dict_set(Dictionary *dict, const char *key, void *value)
+const char *dict_add_kv(Dictionary *dict, const char *key, void *value)
 {
     if (value == NULL) return NULL;
 
@@ -140,6 +140,11 @@ const char *dict_set(Dictionary *dict, const char *key, void *value)
     }
 
     return dict_set_entry(dict->entries, dict->capacity, key, value, &dict->length);
+}
+
+const char *dict_add_entry(Dictionary *dict, DictionaryEntry *entry)
+{
+    return dict_add_kv(dict, entry->key, entry->value);
 }
 
 size_t dict_length(Dictionary *dict)

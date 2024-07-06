@@ -31,7 +31,8 @@ typedef struct
 Dictionary *dict_create(void);
 void dict_destroy(Dictionary *dict);
 void *dict_get(Dictionary *dict, const char *key);
-const char *dict_set(Dictionary *dict, const char *key, void *value);
+const char *dict_add_kv(Dictionary *dict, const char *key, void *value);
+const char *dict_add_entry(Dictionary *dict, DictionaryEntry *entry);
 size_t dict_length(Dictionary *dict);
 
 #endif // DICTIONARY_H
