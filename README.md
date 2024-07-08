@@ -12,3 +12,7 @@ To build the project, run the following commands from the project root.
 - `cd build`
 - `cmake ../src/`
 - `cmake --build .`
+
+Once built, run the application:
+
+- `./main`
