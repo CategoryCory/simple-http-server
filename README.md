@@ -6,6 +6,8 @@ This project implements a very simple HTTP server in C.
 
 ## Build the project
 
+### Linux/Windows WSL
+
 To build the project, run the following commands from the project root.
 
 - `mkdir build`
