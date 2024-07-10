@@ -73,4 +73,7 @@ build/
 # External projects
 *-prefix/
 
+# Visual Studio Code
+.vscode/
+
 # End of https://www.toptal.com/developers/gitignore/api/c
