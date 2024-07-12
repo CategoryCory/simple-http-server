@@ -1,6 +1,10 @@
 #ifndef REQUESTS_H
 #define REQUESTS_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif  // __cplusplus
+
 #include <stdint.h>
 
 #define REQUEST_TYPE_MAX_SIZE   16
@@ -35,5 +39,9 @@ typedef struct
  * @return Zero if parse was successful, non-zero otherwise.
  */
 int parse_request(char *request, HttpRequestDetails *details);
+
+#ifdef __cplusplus
+}
+#endif  // __cplusplus
 
 #endif // REQUESTS_H

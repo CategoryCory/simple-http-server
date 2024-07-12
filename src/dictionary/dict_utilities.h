@@ -1,6 +1,10 @@
 #ifndef DICT_UTILITIES_H
 #define DICT_UTILITIES_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif  // __cplusplus
+
 #include "dictionary.h"
 
 /**
@@ -11,5 +15,9 @@
  * @return 0 if the dictionary was successfully populated, non-zero otherwise.
  */
 int csv_to_dict(const char *file_name, Dictionary *dict);
+
+#ifdef __cplusplus
+}
+#endif  // __cplusplus
 
 #endif // DICT_UTILITIES_H

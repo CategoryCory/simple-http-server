@@ -1,6 +1,10 @@
 #ifndef SERVER_H
 #define SERVER_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif  // __cplusplus
+
 #include <stdint.h>
 
 /**
@@ -24,5 +28,9 @@ const char *get_mime_type(const char *f_ext);
  * 
  */
 void start_server(void);
+
+#ifdef __cplusplus
+}
+#endif  // __cplusplus
 
 #endif // SERVER_H

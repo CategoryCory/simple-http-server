@@ -1,6 +1,10 @@
 #ifndef DICTIONARY_H
 #define DICTIONARY_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif  // __cplusplus
+
 #include <stdbool.h>
 #include <stdlib.h>
 
@@ -99,5 +103,9 @@ bool dict_contains_key(Dictionary *dict, const char *key);
  * @return The current size of the dictionary.
  */
 size_t dict_length(Dictionary *dict);
+
+#ifdef __cplusplus
+}
+#endif  // __cplusplus
 
 #endif // DICTIONARY_H
