@@ -48,11 +48,12 @@ typedef struct
 /**
  * @brief Initialize a new dictionary.
  * 
- * Creates a new instance of a Dictionary struct and returns a pointer.
+ * Initializes a new instance of a Dictionary struct.
  * 
- * @return A pointer to the newly created dictionary.
+ * @param dict A pointer to the dictionary to initialize.
+ * @return Zero if initialization succeeded, non-zero otherwise.
  */
-Dictionary *dict_create(void);
+int dict_init(Dictionary *dict);
 
 /**
  * @brief Destroys a dictionary instance.

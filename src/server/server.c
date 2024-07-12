@@ -5,7 +5,6 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 #include "server.h"
-#include "dictionary.h"
 #include "requests.h"
 #include "file_utilities.h"
 

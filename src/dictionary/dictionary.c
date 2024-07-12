@@ -4,10 +4,9 @@
 #include <string.h>
 #include "dictionary.h"
 
-Dictionary *dict_create(void)
+int dict_init(Dictionary *dict)
 {
-    Dictionary *dict = malloc(sizeof(Dictionary));
-    if (dict == NULL) return NULL;
+    memset(dict, 0, sizeof(Dictionary));
 
     dict->length = 0;
     dict->capacity = INITIAL_CAPACITY;
@@ -16,10 +15,10 @@ Dictionary *dict_create(void)
     if (dict->entries == NULL)
     {
         free(dict);
-        return NULL;
+        return EXIT_FAILURE;
     }
 
-    return dict;
+    return EXIT_SUCCESS;
 }
 
 void dict_destroy(Dictionary *dict)
@@ -30,7 +29,6 @@ void dict_destroy(Dictionary *dict)
     }
 
     free(dict->entries);
-    free(dict);
 }
 
 static uint64_t hash_key(const char *key)
