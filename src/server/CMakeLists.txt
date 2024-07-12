@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.22)
 add_library(server STATIC server.c)
-target_include_directories(server PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/../dictionary)
-target_link_libraries(server PUBLIC dictionary)
-# target_compile_options()
+target_include_directories(server PUBLIC 
+                           ${CMAKE_CURRENT_SOURCE_DIR} 
+                           ${CMAKE_CURRENT_SOURCE_DIR}/../dictionary
+                           ${CMAKE_CURRENT_SOURCE_DIR}/../requests)
+target_link_libraries(server PUBLIC dictionary requests)

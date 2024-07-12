@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "server/server.h"
+#include "requests/requests.h"
 
 int main(void)
 {
