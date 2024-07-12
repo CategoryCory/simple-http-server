@@ -8,7 +8,9 @@ extern "C" {
 #include <stdint.h>
 
 /**
- * @brief Get the file extension of a given file name.
+ * @brief Get the file extension of a file.
+ * 
+ * Given a file name, returns the extension of the provided file name.
  * 
  * @param f_name The name of the file as a string.
  * @return The file's extension as a string.
@@ -16,7 +18,9 @@ extern "C" {
 const char *get_file_extension(const char *f_name);
 
 /**
- * @brief Get the mime type based on a file's extension.
+ * @brief Get the mime type of a file.
+ * 
+ * Given a file extension, retrieves the mime type associated with the provided extension.
  * 
  * @param f_ext The file extension as a string.
  * @return The file's associated mime type as a string.

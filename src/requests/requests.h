@@ -34,6 +34,9 @@ typedef struct
 /**
  * @brief Parses an HTTP request.
  * 
+ * Given a string representing an HTTP request, parses the string as an HTTP request and
+ * populates the provided HttpRequestDetails object.
+ * 
  * @param request The request to parse as a string.
  * @param details A pointer to the HttpRequestDetails struct to populate.
  * @return Zero if parse was successful, non-zero otherwise.

@@ -18,8 +18,8 @@ extern "C" {
  */
 typedef struct
 {
-    const char *key;    /**< Key as a string. */
-    void *value;        /**< Value as a void pointer. */
+    const char *key;    ///< Key as a string.
+    void *value;        ///< Value as a void pointer.
 } DictionaryEntry;
 
 /**
@@ -28,9 +28,9 @@ typedef struct
  */
 typedef struct 
 {
-    DictionaryEntry *entries;   /**< Array of dictionary items. */
-    size_t capacity;            /**< Maximum capacity of the dictionary. */
-    size_t length;              /**< Current number of items in the dictionary. */
+    DictionaryEntry *entries;   ///< Array of dictionary items.
+    size_t capacity;            ///< Maximum capacity of the dictionary.
+    size_t length;              ///< Current number of items in the dictionary.
 } Dictionary;
 
 /**
@@ -39,21 +39,25 @@ typedef struct
  */
 typedef struct
 {
-    const char *key;        /**< The current key. */
-    void *value;            /**< The current value. */
-    Dictionary *_dict;      /**< The dictionary for the current iterator. */
-    size_t _index;          /**< The current index of the iterator. */
+    const char *key;        ///< The current key.
+    void *value;            ///< The current value.
+    Dictionary *_dict;      ///< The dictionary for the current iterator.
+    size_t _index;          ///< The current index of the iterator.
 } DictionaryIterator;
 
 /**
  * @brief Initialize a new dictionary.
+ * 
+ * Creates a new instance of a Dictionary struct and returns a pointer.
  * 
  * @return A pointer to the newly created dictionary.
  */
 Dictionary *dict_create(void);
 
 /**
- * @brief Destroys a dictionary instance and frees all allocated memory.
+ * @brief Destroys a dictionary instance.
+ * 
+ * Destroys a dictionary instance and frees all associated memory.
  * 
  * @param dict A pointer to the dictionary to destroy.
  */
@@ -61,6 +65,8 @@ void dict_destroy(Dictionary *dict);
 
 /**
  * @brief Retrieves value associated with key.
+ * 
+ * Retrieves a value from the dictionary by looking up the provided key.
  * 
  * @param dict A pointer to the dictionary.
  * @param key The key as a string.
@@ -70,6 +76,8 @@ void *dict_get(Dictionary *dict, const char *key);
 
 /**
  * @brief Add a new key/value pair to the dictionary.
+ * 
+ * Adds the provided key and value pair to the associated Dictionary.
  * 
  * @param dict A pointer to the dictionary.
  * @param key The key to add, as a string.
@@ -81,6 +89,8 @@ const char *dict_add_kv(Dictionary *dict, const char *key, void *value);
 /**
  * @brief Add a new DictionaryEntry to the dictionary.
  * 
+ * Adds the provided DictionaryEntry object to the associated Dictionary.
+ * 
  * @param dict A pointer to the dictionary.
  * @param entry A pointer to the DictionaryEntry to add.
  * @return The newly added key, as a string.
@@ -90,6 +100,8 @@ const char *dict_add_entry(Dictionary *dict, DictionaryEntry *entry);
 /**
  * @brief Checks if the dictionary contains a specified key.
  * 
+ * Searches for a particular key in the associated dictionary.
+ * 
  * @param dict A pointer to the dictionary.
  * @param key The key to search for, as a string.
  * @return True if the key was found, false otherwise.
@@ -98,6 +110,8 @@ bool dict_contains_key(Dictionary *dict, const char *key);
 
 /**
  * @brief Returns the current size of the dictionary.
+ * 
+ * Retrieves the current number of elements stored in the provided Dictionary object.
  * 
  * @param dict A pointer to the dictionary.
  * @return The current size of the dictionary.
