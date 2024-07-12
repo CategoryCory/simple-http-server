@@ -7,6 +7,7 @@
 #include "server.h"
 #include "dictionary.h"
 #include "requests.h"
+#include "file_utilities.h"
 
 const char *get_file_extension(const char *f_name)
 {
