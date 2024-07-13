@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "requests.h"
+#include "string_utilities.h"
 
 const char *http_verbs[] = {"GET", "HEAD", "POST", "PUT", "DELETE", "CONNECT", "OPTIONS", "TRACE", "PATCH"};
 
@@ -16,12 +17,6 @@ static bool is_valid_http_verb(const char *v)
     }
 
     return false;
-}
-
-static bool starts_with(const char *str, const char *target)
-{
-    const size_t target_length = strlen(target);
-    return strncmp(str, target, target_length) == 0;
 }
 
 int parse_request(char *request, HttpRequestDetails *details)
