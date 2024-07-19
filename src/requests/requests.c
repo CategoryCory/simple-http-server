@@ -20,11 +20,36 @@ static bool is_valid_http_verb(const char *v)
     return false;
 }
 
+HttpRequestDetails* init_http_details(void)
+{
+    HttpRequestDetails *new_details = (HttpRequestDetails *)calloc(1, sizeof(HttpRequestDetails));
+
+    if (new_details == NULL)
+    {
+        perror("Failed to allocate memory for HttpRequestDetails");
+        return NULL;
+    }
+
+    new_details->request_type = NULL;
+    new_details->path = NULL;
+    new_details->headers = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, g_free);
+
+    return new_details;
+}
+
+void free_http_details(HttpRequestDetails *details)
+{
+    if (details != NULL)
+    {
+        free(details->request_type);
+        free(details->path);
+        g_hash_table_destroy(details->headers);
+        free(details);
+    }
+}
+
 int parse_request(char **request, const size_t request_length, HttpRequestDetails *details)
 {
-    // Initialize memory in HttpRequestDetails struct
-    memset(details, 0, sizeof(HttpRequestDetails));
-
     // Get the HTTP verb
     char *req_line_token = strtok(request[0], " ");
 
@@ -34,11 +59,15 @@ int parse_request(char **request, const size_t request_length, HttpRequestDetail
         return EXIT_FAILURE;
     }
 
-    strncpy(details->request_type, req_line_token, REQUEST_TYPE_MAX_SIZE - 1);
+    size_t verb_length = strlen(req_line_token) + 1;
+    details->request_type = (char *)malloc(verb_length);
+    strncpy(details->request_type, req_line_token, verb_length);
 
     // Get URL path
     req_line_token = strtok(NULL, " ");
-    strncpy(details->path, req_line_token, REQUEST_PATH_MAX_SIZE - 1);
+    size_t path_length = strlen(req_line_token) + 1;
+    details->path = (char *)malloc(path_length);
+    strncpy(details->path, req_line_token, path_length);
 
     // Get HTTP version
     req_line_token = strtok(NULL, " ");
@@ -60,12 +89,8 @@ int parse_request(char **request, const size_t request_length, HttpRequestDetail
         .ver_major = atoi(maj_version),
         .ver_minor = atoi(min_version)
     };
-    
+
     // Get HTTP headers
-    details->headers = g_hash_table_new_full(g_str_hash, 
-                                             g_str_equal, 
-                                             g_free, 
-                                             g_free);       // Initialize new hash table
     uint8_t current_line = 1;                               // Start at line 1; skip request line (line 0)
     uint8_t max_header_tokens = 2;                          // Split only on first colon
     char **header_tokens = NULL;
@@ -96,9 +121,4 @@ int parse_request(char **request, const size_t request_length, HttpRequestDetail
     if (header_tokens != NULL) g_strfreev(header_tokens);
 
     return EXIT_SUCCESS;
-}
-
-void free_request(HttpRequestDetails *details)
-{
-    g_hash_table_destroy(details->headers);
 }

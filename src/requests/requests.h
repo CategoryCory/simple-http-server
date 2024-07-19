@@ -8,9 +8,6 @@ extern "C" {
 #include <glib.h>
 #include <stdint.h>
 
-#define REQUEST_TYPE_MAX_SIZE   16
-#define REQUEST_PATH_MAX_SIZE   1024
-
 /**
  * @brief A struct representing an HTTP version number.
  * 
@@ -27,11 +24,29 @@ typedef struct
  */
 typedef struct
 {
-    char request_type[REQUEST_TYPE_MAX_SIZE];   ///< HTTP request method as a string.
-    char path[REQUEST_PATH_MAX_SIZE];           ///< HTTP request path as a string.
-    HttpVersion version;                        ///< HTTP version as HttpVersion.
-    GHashTable *headers;                        ///< HTTP request headers as a GHashTable.
+    char *request_type;         ///< HTTP request method as a string.
+    char *path;                 ///< HTTP request path as a string.
+    HttpVersion version;        ///< HTTP version as HttpVersion.
+    GHashTable *headers;        ///< HTTP request headers as a GHashTable.
 } HttpRequestDetails;
+
+/**
+ * @brief Creates a new HttpRequestDetails struct.
+ * 
+ * Initializes and allocates a new instance of the HttpRequestDetails struct.
+ * 
+ * @return A pointer to the newly created HttpRequestDetails struct.
+ */
+HttpRequestDetails* init_http_details(void);
+
+/**
+ * @brief Destroys an HttpRequestDetails struct.
+ * 
+ * Frees all the memory allocated for an HttpRequestDetails struct.
+ * 
+ * @param details A pointer to the HttpRequestDetails struct to be destroyed.
+ */
+void free_http_details(HttpRequestDetails *details);
 
 /**
  * @brief Parses an HTTP request.
@@ -45,15 +60,6 @@ typedef struct
  * @return Zero if parse was successful, non-zero otherwise.
  */
 int parse_request(char **request, const size_t request_length, HttpRequestDetails *details);
-
-/**
- * @brief Frees an HTTP request details object.
- * 
- * This function frees all memory associated with a given HttpRequestDetails struct.
- * 
- * @param details A pointer to the HttpRequestDetails struct to be freed.
- */
-void free_request(HttpRequestDetails *details);
 
 #ifdef __cplusplus
 }

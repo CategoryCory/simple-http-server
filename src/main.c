@@ -28,18 +28,17 @@ int main(void)
 
     if (read_text_file(fn, &text_file) == 0)
     {
-        HttpRequestDetails details;
-        if (parse_request(text_file.lines, text_file.line_count, &details) == 0)
+        HttpRequestDetails *details = init_http_details();
+        if (parse_request(text_file.lines, text_file.line_count, details) == 0)
         {
-            printf("HTTP method: %s\n", details.request_type);
-            printf("Path: %s\n", details.path);
-            printf("Version: %d.%d\n", details.version.ver_major, details.version.ver_minor);
+            printf("HTTP method: %s\n", details->request_type);
+            printf("Path: %s\n", details->path);
+            printf("Version: %d.%d\n", details->version.ver_major, details->version.ver_minor);
 
-            g_hash_table_foreach(details.headers, print_ht_entry, NULL);
-
-            free_request(&details);
+            g_hash_table_foreach(details->headers, print_ht_entry, NULL);
         }
         
+        free_http_details(details);
         free_text_file(&text_file);
     }
     return EXIT_SUCCESS;
