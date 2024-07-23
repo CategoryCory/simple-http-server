@@ -53,25 +53,49 @@ static bool on_incoming_connection(__attribute__((unused)) GSocketService *servi
 {
     GInputStream *istream;
     GOutputStream *ostream;
-    char buffer[1024];
+    char input_buffer[8192];
     gssize size;
 
     istream = g_io_stream_get_input_stream(G_IO_STREAM(connection));
     ostream = g_io_stream_get_output_stream(G_IO_STREAM(connection));
 
-    size = g_input_stream_read(istream, buffer, sizeof(buffer) - 1, NULL, NULL);
+    size = g_input_stream_read(istream, input_buffer, sizeof(input_buffer) - 1, NULL, NULL);
     if (size > 0)
     {
-        buffer[size] = '\0';
-        g_print("Received request:\n%s\n", buffer);
+        char output_buffer[8192];
+        input_buffer[size] = '\0';
+        // g_print("Received request:\n%s\n", input_buffer);
 
-        const char *response = "HTTP/1.1 200 OK\r\n"
-                               "Content-Type: text/plain\r\n"
-                               "Content-Length: 13\r\n"
-                               "\r\n"
-                               "Hello, world!";
+        HttpRequestDetails *details = init_http_details();
+
+        parse_request(input_buffer, details);
+
+        char headers[1024] = "HTTP/1.1 200 OK\r\n"
+                             "Content-Type: text/html\r\n"
+                             "Content-Length: %lu\r\n"
+                             "\r\n";
+
+        char message[7168] = "<html>\r\n"
+                             "<body>\r\n"
+                             "<h3>Hello World!</h3>\r\n"
+                             "<p>You requested the following page: %s\r\n"
+                             "</body>\r\n"
+                             "</html>\r\n";
         
-        g_output_stream_write(ostream, response, strlen(response), NULL, NULL);
+        char retval[8192];
+        strncpy(retval, headers, 1024);
+        strncat(retval, message, 7168);
+        size_t message_length = strlen(message);
+
+        snprintf(output_buffer, 
+                 sizeof(output_buffer), 
+                 retval,
+                 message_length,
+                 details->path);
+        
+        g_output_stream_write(ostream, output_buffer, strlen(output_buffer), NULL, NULL);
+
+        free_http_details(details);
     }
 
     g_object_unref(connection);
@@ -84,8 +108,6 @@ int g_start_server(void)
     GError *error = NULL;
     GInetAddress *inet_address;
     GSocketAddress *socket_address;
-
-    // g_type_init();
 
     service = g_socket_service_new();
     g_signal_connect(service, "incoming", G_CALLBACK(on_incoming_connection), NULL);
