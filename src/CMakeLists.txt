@@ -14,18 +14,20 @@ add_subdirectory(requests)
 add_subdirectory(file_utilities)
 add_subdirectory(string_utilities)
 
-# Find GLib package
+# Find required packages
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(GLIB REQUIRED glib-2.0)
+pkg_check_modules(GIO REQUIRED gio-2.0)
 
-# Include GLib header files
+# Include required directories
 include_directories(${GLIB_INCLUDE_DIRS})
+include_directories(${GIO_INCLUDE_DIRS})
 
 # Add executable file
 add_executable(main main.c)
 
 # Add target libraries and include directories
-target_link_libraries(main PUBLIC server requests ${GLIB_LIBRARIES})
+target_link_libraries(main PUBLIC server requests ${GLIB_LIBRARIES} ${GIO_LIBRARIES})
 target_include_directories(main PUBLIC
                            "${PROJECT_SOURCE_DIR}/dictionary"
                            "${PROJECT_SOURCE_DIR}/server"
@@ -35,4 +37,4 @@ target_include_directories(main PUBLIC
                            )
 
 # Add GLib compiler flags
-target_compile_options(main PRIVATE ${GLIB_CFLAGS_OTHER})
+target_compile_options(main PRIVATE ${GLIB_CFLAGS_OTHER} ${GIO_CFLAGS_OTHER})

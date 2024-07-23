@@ -33,6 +33,8 @@ const char *get_mime_type(const char *f_ext);
  */
 void start_server(void);
 
+int g_start_server(void);
+
 #ifdef __cplusplus
 }
 #endif  // __cplusplus

@@ -6,15 +6,15 @@
 #include "requests.h"
 #include "string_utilities.h"
 
-const char *http_verbs[] = {"GET", "HEAD", "POST", "PUT", "DELETE", "CONNECT", "OPTIONS", "TRACE", "PATCH"};
+const char *http_methods[] = {"GET", "HEAD", "POST", "PUT", "DELETE", "CONNECT", "OPTIONS", "TRACE", "PATCH"};
 
-static bool is_valid_http_verb(const char *v)
+static bool is_valid_http_method(const char *v)
 {
-    size_t num_verbs = sizeof(http_verbs) / sizeof(http_verbs[0]);
+    size_t num_methods = sizeof(http_methods) / sizeof(http_methods[0]);
 
-    for (size_t i = 0; i < num_verbs; i++)
+    for (size_t i = 0; i < num_methods; i++)
     {
-        if (strcmp(v, http_verbs[i]) == 0) return true;
+        if (strcmp(v, http_methods[i]) == 0) return true;
     }
 
     return false;
@@ -30,7 +30,7 @@ HttpRequestDetails* init_http_details(void)
         return NULL;
     }
 
-    new_details->request_type = NULL;
+    new_details->request_method = NULL;
     new_details->path = NULL;
     new_details->headers = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, g_free);
 
@@ -41,27 +41,36 @@ void free_http_details(HttpRequestDetails *details)
 {
     if (details != NULL)
     {
-        free(details->request_type);
+        free(details->request_method);
         free(details->path);
         g_hash_table_destroy(details->headers);
         free(details);
     }
 }
 
-int parse_request(char **request, const size_t request_length, HttpRequestDetails *details)
+int parse_request(char *request, HttpRequestDetails *details)
 {
-    // Get the HTTP verb
-    char *req_line_token = strtok(request[0], " ");
-
-    if (!is_valid_http_verb(req_line_token))
+    // Split request on newline characters
+    char **request_lines = g_strsplit_set(request, "\r\n", -1);
+    uint32_t request_length = g_strv_length(request_lines);
+    printf("Printing headers:\n");
+    for (uint32_t i = 0; i < request_length; i++)
     {
-        fprintf(stderr, "Invalid HTTP verb\n");
+        printf("%s", request_lines[i]);
+    }
+
+    // Get the HTTP method
+    char *req_line_token = strtok(request_lines[0], " ");
+
+    if (!is_valid_http_method(req_line_token))
+    {
+        fprintf(stderr, "Invalid HTTP method\n");
         return EXIT_FAILURE;
     }
 
-    size_t verb_length = strlen(req_line_token) + 1;
-    details->request_type = (char *)malloc(verb_length);
-    strncpy(details->request_type, req_line_token, verb_length);
+    size_t method_length = strlen(req_line_token) + 1;
+    details->request_method = (char *)malloc(method_length);
+    strncpy(details->request_method, req_line_token, method_length);
 
     // Get URL path
     req_line_token = strtok(NULL, " ");
@@ -95,11 +104,11 @@ int parse_request(char **request, const size_t request_length, HttpRequestDetail
     uint8_t max_header_tokens = 2;                          // Split only on first colon
     char **header_tokens = NULL;
 
-    while (current_line < request_length && !is_empty(request[current_line]))
+    while (current_line < request_length && !is_empty(request_lines[current_line]))
     {
         if (header_tokens != NULL) g_strfreev(header_tokens);
 
-        header_tokens = g_strsplit(request[current_line], ":", max_header_tokens);
+        header_tokens = g_strsplit(request_lines[current_line], ":", max_header_tokens);
 
         if (header_tokens[0] == NULL || header_tokens[1] == NULL)
         {
@@ -118,6 +127,8 @@ int parse_request(char **request, const size_t request_length, HttpRequestDetail
         current_line++;
     }
 
+    // Cleanup
+    if (request_lines != NULL) g_strfreev(request_lines);
     if (header_tokens != NULL) g_strfreev(header_tokens);
 
     return EXIT_SUCCESS;

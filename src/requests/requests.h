@@ -24,7 +24,7 @@ typedef struct
  */
 typedef struct
 {
-    char *request_type;         ///< HTTP request method as a string.
+    char *request_method;       ///< HTTP request method as a string.
     char *path;                 ///< HTTP request path as a string.
     HttpVersion version;        ///< HTTP version as HttpVersion.
     GHashTable *headers;        ///< HTTP request headers as a GHashTable.
@@ -54,12 +54,11 @@ void free_http_details(HttpRequestDetails *details);
  * Given a string representing an HTTP request, parses the string as an HTTP request and
  * populates the provided HttpRequestDetails object.
  * 
- * @param request The request to parse as an array of strings.
- * @param request_length The number of elements in @p request.
+ * @param request The request to parse as a string.
  * @param details A pointer to the HttpRequestDetails struct to populate.
  * @return Zero if parse was successful, non-zero otherwise.
  */
-int parse_request(char **request, const size_t request_length, HttpRequestDetails *details);
+int parse_request(char *request, HttpRequestDetails *details);
 
 #ifdef __cplusplus
 }
