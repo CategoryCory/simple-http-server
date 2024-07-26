@@ -51,12 +51,14 @@ void free_http_details(HttpRequestDetails *details)
 int parse_request(char *request, HttpRequestDetails *details)
 {
     // Split request on newline characters
-    char **request_lines = g_strsplit_set(request, "\r\n", -1);
-    uint32_t request_length = g_strv_length(request_lines);
-    printf("Printing headers:\n");
-    for (uint32_t i = 0; i < request_length; i++)
+    size_t request_length;
+    char **request_lines = str_split_newline(request, &request_length);
+
+    // A request must contain at minimum a request line and Host header
+    if (request_length < 2)
     {
-        printf("%s", request_lines[i]);
+        fprintf(stderr, "Invalid HTTP header");
+        return EXIT_FAILURE;
     }
 
     // Get the HTTP method
@@ -127,8 +129,15 @@ int parse_request(char *request, HttpRequestDetails *details)
         current_line++;
     }
 
+    // Host header is required
+    if (!g_hash_table_contains(details->headers, "Host"))
+    {
+        fprintf(stderr, "Missing HOST header");
+        return EXIT_FAILURE;
+    }
+
     // Cleanup
-    if (request_lines != NULL) g_strfreev(request_lines);
+    if (request_lines != NULL) free_lines(request_lines, request_length);
     if (header_tokens != NULL) g_strfreev(header_tokens);
 
     return EXIT_SUCCESS;
