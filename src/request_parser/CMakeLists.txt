@@ -1,14 +1,14 @@
 cmake_minimum_required(VERSION 3.22)
 
 # Add library
-add_library(requests STATIC requests.c)
+add_library(request_parser STATIC request_parser.c)
 
 # Add include directories and target libraries
-target_link_libraries(requests PUBLIC string_utilities ${GLIB_LIBRARIES})
-target_include_directories(requests PUBLIC 
+target_link_libraries(request_parser PUBLIC string_utilities ${GLIB_LIBRARIES})
+target_include_directories(request_parser PUBLIC 
                            ${CMAKE_CURRENT_SOURCE_DIR}
                            ${CMAKE_CURRENT_SOURCE_DIR}/../string_utilities
                            ${GLIB_INCLUDE_DIRS})
 
 # Add GLib compiler flags
-target_compile_options(requests PRIVATE ${GLIB_CFLAGS_OTHER})
+target_compile_options(request_parser PRIVATE ${GLIB_CFLAGS_OTHER})

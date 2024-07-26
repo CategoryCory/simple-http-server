@@ -7,7 +7,7 @@
 #include <glib.h>
 #include <gio/gio.h>
 #include "server.h"
-#include "requests.h"
+#include "request_parser.h"
 #include "file_utilities.h"
 
 const char *get_file_extension(const char *f_name)
