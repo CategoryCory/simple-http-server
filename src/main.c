@@ -3,7 +3,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <glib.h>
-#include "dictionary/dictionary.h"
 #include "requests/requests.h"
 #include "file_utilities/file_utilities.h"
 #include "server/server.h"
