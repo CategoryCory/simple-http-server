@@ -1,0 +1,5 @@
+cmake_minimum_required(VERSION 3.22)
+add_library(file_utilities SHARED file_utilities.c)
+add_library(string_utilities SHARED string_utilities.c)
+target_include_directories(file_utilities PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(string_utilities PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

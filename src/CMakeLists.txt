@@ -9,9 +9,8 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -Werror -O2")
 
 # Add project subdirectories
 add_subdirectory(server)
-add_subdirectory(request_parser)
-add_subdirectory(file_utilities)
-add_subdirectory(string_utilities)
+add_subdirectory(http)
+add_subdirectory(utils)
 
 # Find required packages
 find_package(PkgConfig REQUIRED)
@@ -29,9 +28,8 @@ add_executable(main main.c)
 target_link_libraries(main PUBLIC server request_parser ${GLIB_LIBRARIES} ${GIO_LIBRARIES})
 target_include_directories(main PUBLIC
                            "${PROJECT_SOURCE_DIR}/server"
-                           "${PROJECT_SOURCE_DIR}/request_parser"
-                           "${PROJECT_SOURCE_DIR}/file_utilities"
-                           "${PROJECT_SOURCE_DIR}/string_utilities"
+                           "${PROJECT_SOURCE_DIR}/http"
+                           "${PROJECT_SOURCE_DIR}/utils"
                            )
 
 # Add GLib compiler flags

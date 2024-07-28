@@ -3,10 +3,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <glib.h>
-#include "request_parser/request_parser.h"
-#include "file_utilities/file_utilities.h"
+#include "utils/file_utilities.h"
+#include "utils/string_utilities.h"
+#include "http/request_parser.h"
 #include "server/server.h"
-#include "string_utilities/string_utilities.h"
 
 void print_ht_entry(gpointer key, gpointer value, gpointer user_data)
 {

@@ -102,7 +102,7 @@ int parse_request(char *request, HttpRequestDetails *details)
     };
 
     // Get HTTP headers
-    uint8_t current_line = 1;                               // Start at line 1; skip request line (line 0)
+    size_t current_line = 1;                                // Start at line 1; skip request line (line 0)
     uint8_t max_header_tokens = 2;                          // Split only on first colon
     char **header_tokens = NULL;
 

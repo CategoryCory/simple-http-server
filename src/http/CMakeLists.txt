@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.22)
 
 # Add library
-add_library(request_parser STATIC request_parser.c)
+add_library(request_parser SHARED request_parser.c)
 
 # Add include directories and target libraries
 target_link_libraries(request_parser PUBLIC string_utilities ${GLIB_LIBRARIES})
