@@ -64,11 +64,12 @@ static bool on_incoming_connection(__attribute__((unused)) GSocketService *servi
     {
         char output_buffer[8192];
         input_buffer[size] = '\0';
-        // g_print("Received request:\n%s\n", input_buffer);
 
         HttpRequestDetails *details = init_http_details();
 
         parse_request(input_buffer, details);
+
+        printf("%s %s HTTP/%d.%d\n", details->request_method, details->path, details->version.ver_major, details->version.ver_minor);
 
         char headers[1024] = "HTTP/1.1 200 OK\r\n"
                              "Content-Type: text/html\r\n"
@@ -98,7 +99,8 @@ static bool on_incoming_connection(__attribute__((unused)) GSocketService *servi
         free_http_details(details);
     }
 
-    g_object_unref(connection);
+    // g_object_unref(connection);
+    g_io_stream_close(G_IO_STREAM(connection), NULL, NULL);
     return true;
 }
 
@@ -113,7 +115,7 @@ int g_start_server(void)
     g_signal_connect(service, "incoming", G_CALLBACK(on_incoming_connection), NULL);
 
     inet_address = g_inet_address_new_any(G_SOCKET_FAMILY_IPV4);
-    socket_address = g_inet_socket_address_new(inet_address, 9999);
+    socket_address = g_inet_socket_address_new(inet_address, LISTEN_PORT);
 
     if (!g_socket_listener_add_address(G_SOCKET_LISTENER(service),      // GSocketListener *listener
                                        socket_address,                  // GSocketAddress *address
@@ -132,7 +134,7 @@ int g_start_server(void)
     g_object_unref(inet_address);
 
     g_socket_service_start(service);
-    g_print("HTTP server is listening on port 9999\n");
+    g_print("HTTP server is listening on port %d\n", LISTEN_PORT);
 
     GMainLoop *loop = g_main_loop_new(NULL, false);
     g_main_loop_run(loop);
@@ -144,7 +146,7 @@ int g_start_server(void)
 void start_server(void)
 {
     char *ip = "127.0.0.1";
-    in_port_t port = 9999;
+    in_port_t port = LISTEN_PORT;
 
     int server_sock, client_sock, n;
     struct sockaddr_in server_addr, client_addr;

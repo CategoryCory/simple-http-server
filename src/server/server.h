@@ -7,6 +7,8 @@ extern "C" {
 
 #include <stdint.h>
 
+#define LISTEN_PORT     9999
+
 /**
  * @brief Get the file extension of a file.
  * 

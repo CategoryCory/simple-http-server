@@ -31,6 +31,20 @@ typedef struct
 } HttpRequestDetails;
 
 /**
+ * @brief An enum containing return codes for the HTTP parser.
+ * 
+ */
+typedef enum
+{
+    HP_SUCCESS,                 ///< Request was parsed successfully.
+    HP_INVALID_REQUEST,         ///< Request was invalid.
+    HP_INVALID_METHOD,          ///< Request method was invalid or unsupported.
+    HP_MISSING_HEADER,          ///< Request was missing a required header.
+    HP_MEMORY_ERROR,            ///< An error occurred while allocating memory.
+    HP_SYSTEM_ERROR             ///< Other error indicating a failure to parse request.
+} HttpParserCodes;
+
+/**
  * @brief Creates a new HttpRequestDetails struct.
  * 
  * Initializes and allocates a new instance of the HttpRequestDetails struct.
@@ -56,9 +70,9 @@ void free_http_details(HttpRequestDetails *details);
  * 
  * @param request The request to parse as a string.
  * @param details A pointer to the HttpRequestDetails struct to populate.
- * @return Zero if parse was successful, non-zero otherwise.
+ * @return A value from the HttpParserCodes enum indicating status.
  */
-int parse_request(char *request, HttpRequestDetails *details);
+HttpParserCodes parse_request(char *request, HttpRequestDetails *details);
 
 #ifdef __cplusplus
 }

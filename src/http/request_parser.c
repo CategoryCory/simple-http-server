@@ -1,5 +1,6 @@
 #include <glib.h>
 #include <stdbool.h>
+#include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -22,7 +23,7 @@ static bool is_valid_http_method(const char *v)
 
 HttpRequestDetails* init_http_details(void)
 {
-    HttpRequestDetails *new_details = (HttpRequestDetails *)calloc(1, sizeof(HttpRequestDetails));
+    HttpRequestDetails *new_details = calloc(1, sizeof(HttpRequestDetails));
 
     if (new_details == NULL)
     {
@@ -48,7 +49,7 @@ void free_http_details(HttpRequestDetails *details)
     }
 }
 
-int parse_request(char *request, HttpRequestDetails *details)
+HttpParserCodes parse_request(char *request, HttpRequestDetails *details)
 {
     // Split request on newline characters
     size_t request_length;
@@ -58,7 +59,7 @@ int parse_request(char *request, HttpRequestDetails *details)
     if (request_length < 2)
     {
         fprintf(stderr, "Invalid HTTP header");
-        return EXIT_FAILURE;
+        return HP_MISSING_HEADER;
     }
 
     // Get the HTTP method
@@ -67,18 +68,30 @@ int parse_request(char *request, HttpRequestDetails *details)
     if (!is_valid_http_method(req_line_token))
     {
         fprintf(stderr, "Invalid HTTP method\n");
-        return EXIT_FAILURE;
+        return HP_INVALID_METHOD;
     }
 
     size_t method_length = strlen(req_line_token) + 1;
-    details->request_method = (char *)malloc(method_length);
-    strncpy(details->request_method, req_line_token, method_length);
+
+    details->request_method = malloc(method_length);
+    if (details->request_method == NULL)
+    {
+        fprintf(stderr, "Error allocating memory\n");
+        return HP_MEMORY_ERROR;
+    }
+    strcpy(details->request_method, req_line_token);
 
     // Get URL path
     req_line_token = strtok(NULL, " ");
     size_t path_length = strlen(req_line_token) + 1;
-    details->path = (char *)malloc(path_length);
-    strncpy(details->path, req_line_token, path_length);
+
+    details->path = malloc(path_length);
+    if (details->path == NULL)
+    {
+        fprintf(stderr, "Error allocating memory\n");
+        return HP_MEMORY_ERROR;
+    }
+    strcpy(details->path, req_line_token);
 
     // Get HTTP version
     req_line_token = strtok(NULL, " ");
@@ -86,7 +99,7 @@ int parse_request(char *request, HttpRequestDetails *details)
     if (!starts_with(req_line_token, "HTTP/"))
     {
         fprintf(stderr, "Invalid HTTP header\n");
-        return EXIT_FAILURE;
+        return HP_MISSING_HEADER;
     }
 
     char version[8];
@@ -118,7 +131,7 @@ int parse_request(char *request, HttpRequestDetails *details)
 
             // TODO: Do we need to free anything here?
 
-            return EXIT_FAILURE;
+            return HP_SYSTEM_ERROR;
         }
 
         char *k = g_strstrip(header_tokens[0]);
@@ -133,12 +146,12 @@ int parse_request(char *request, HttpRequestDetails *details)
     if (!g_hash_table_contains(details->headers, "Host"))
     {
         fprintf(stderr, "Missing HOST header");
-        return EXIT_FAILURE;
+        return HP_MISSING_HEADER;
     }
 
     // Cleanup
     if (request_lines != NULL) free_lines(request_lines, request_length);
     if (header_tokens != NULL) g_strfreev(header_tokens);
 
-    return EXIT_SUCCESS;
+    return HP_SUCCESS;
 }
