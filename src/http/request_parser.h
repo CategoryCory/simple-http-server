@@ -8,6 +8,52 @@ extern "C" {
 #include <glib.h>
 #include <stdint.h>
 
+typedef enum
+{
+    HTTP_GET,
+    HTTP_HEAD,
+    HTTP_POST,
+    HTTP_PUT,
+    HTTP_DELETE,
+    HTTP_CONNECT,
+    HTTP_OPTIONS,
+    HTTP_TRACE,
+    HTTP_PATCH
+} HttpMethod;
+
+typedef enum
+{
+    HTTP_0_9,
+    HTTP_1_0,
+    HTTP_1_1,
+    HTTP_2_0,
+    HTTP_3_0
+} HttpVersionEnum;
+
+typedef struct
+{
+    HttpMethod method;
+    char *url;
+    HttpVersionEnum version;
+} HttpRequestLine;
+
+typedef struct 
+{
+    char *name;
+    char *value;
+} HttpHeader;
+
+typedef struct
+{
+    HttpRequestLine request_line;
+    HttpHeader *headers;
+    size_t header_count;
+    char *body;
+} HttpRequest;
+
+HttpRequestLine* http_request_line_parse(const char *request_line);
+void http_request_line_free(HttpRequestLine *request_line);
+
 /**
  * @brief A struct representing an HTTP version number.
  * 

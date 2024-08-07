@@ -1,4 +1,5 @@
 #include <glib.h>
+#include <regex.h>
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdio.h>
@@ -154,4 +155,132 @@ HttpParserCodes parse_request(char *request, HttpRequestDetails *details)
     if (header_tokens != NULL) g_strfreev(header_tokens);
 
     return HP_SUCCESS;
+}
+
+///////////////////////////////////////////////////////////////////
+
+static bool validate_request_line(const char *request_line)
+{
+    const char *request_line_pattern = "^[A-Z]+\\s+(https?:\\/\\/[^\\s\\/$.?#].[^\\s]*|\\/[^\\s]*)\\s+HTTP/[0-9]+(.[0-9]+)?$";
+    GError *error = NULL;
+    GRegex *regex = g_regex_new(request_line_pattern, 0, 0, &error);
+
+    if (error != NULL)
+    {
+        g_printerr("Error compiling regex: %s\n", error->message);
+        g_error_free(error);
+        return false;
+    }
+
+    bool is_match = g_regex_match(regex, request_line, 0, NULL);
+
+    g_regex_unref(regex);
+
+    return is_match;
+}
+
+static GHashTable* create_http_method_map()
+{
+    GHashTable *method_map = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, g_free);
+
+    g_hash_table_insert(method_map, "GET", GINT_TO_POINTER(HTTP_GET));
+    g_hash_table_insert(method_map, "POST", GINT_TO_POINTER(HTTP_POST));
+    g_hash_table_insert(method_map, "PUT", GINT_TO_POINTER(HTTP_PUT));
+    g_hash_table_insert(method_map, "DELETE", GINT_TO_POINTER(HTTP_DELETE));
+    g_hash_table_insert(method_map, "HEAD", GINT_TO_POINTER(HTTP_HEAD));
+    g_hash_table_insert(method_map, "OPTIONS", GINT_TO_POINTER(HTTP_OPTIONS));
+    g_hash_table_insert(method_map, "PATCH", GINT_TO_POINTER(HTTP_PATCH));
+    g_hash_table_insert(method_map, "TRACE", GINT_TO_POINTER(HTTP_TRACE));
+    g_hash_table_insert(method_map, "CONNECT", GINT_TO_POINTER(HTTP_CONNECT));
+
+    return method_map;
+}
+
+__attribute__((unused)) static GHashTable* create_http_version_map()
+{
+    GHashTable *version_map = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, g_free);
+
+    g_hash_table_insert(version_map, "HTTP/0.9", GINT_TO_POINTER(HTTP_0_9));
+    g_hash_table_insert(version_map, "HTTP/1.0", GINT_TO_POINTER(HTTP_1_0));
+    g_hash_table_insert(version_map, "HTTP/1.1", GINT_TO_POINTER(HTTP_1_1));
+    g_hash_table_insert(version_map, "HTTP/2.0", GINT_TO_POINTER(HTTP_2_0));
+    g_hash_table_insert(version_map, "HTTP/3.0", GINT_TO_POINTER(HTTP_3_0));
+
+    return version_map;
+}
+
+static int get_enum_from_string(GHashTable *map, const char *str)
+{
+    void *value = g_hash_table_lookup(map, str);
+    if (value == NULL)
+    {
+        fprintf(stderr, "Unknown value: %s\n", str);
+        exit(EXIT_FAILURE);     // TODO: What to return here?
+    }
+    return *(int *)value;
+}
+
+HttpRequestLine* http_request_line_parse(const char *request_line)
+{
+    // Create a copy of request_line since strtok() will change the original string
+    char *req_line_copy = strdup(request_line);
+    if (req_line_copy == NULL)
+    {
+        fprintf(stderr, "Memory allocation failed.\n");
+        return NULL;    // TODO: What to return here?
+    }
+
+    // // Validate request line to make sure it is valid
+    if (!validate_request_line(req_line_copy))
+    {
+        // TODO: Error here?
+        return NULL;
+    }
+
+    printf("Request line is valid; continuing to parse...\n");
+
+    HttpRequestLine *parsed_request_line = malloc(sizeof(HttpRequestLine));     // TODO: memory allocation here
+    GHashTable *method_map = create_http_method_map();
+    // GHashTable *version_map = create_http_version_map();
+
+    // // Get the HTTP method
+    char *req_line_token = strtok(req_line_copy, " ");
+    parsed_request_line->method = (HttpMethod) get_enum_from_string(method_map, req_line_token);
+    // parsed_request_line->method = HTTP_GET;
+
+    printf("Method parsed...continuing with URL...\n");
+
+    // // Get the HTTP url
+    req_line_token = strtok(NULL, " ");
+    size_t url_length = strlen(req_line_token) + 1;
+    parsed_request_line->url = malloc(url_length);                              // TODO: memory allocation here
+    if (parsed_request_line->url == NULL)
+    {
+        // TODO: What to return here?
+        return NULL;
+    }
+    strcpy(parsed_request_line->url, req_line_token);
+
+    // Get the HTTP version
+    req_line_token = strtok(NULL, " ");
+    // parsed_request_line->version = (HttpVersionEnum) get_enum_from_string(version_map, req_line_token);
+    parsed_request_line->version = HTTP_2_0;
+
+    // Free allocated memory
+    g_hash_table_destroy(method_map);
+    // g_hash_table_destroy(version_map);
+
+    return parsed_request_line;
+}
+
+void http_request_line_free(HttpRequestLine *request_line)
+{
+    if (request_line != NULL)
+    {
+        if (request_line->url != NULL)
+        {
+            free(request_line->url);
+        }
+        free(request_line);
+    }
 }
